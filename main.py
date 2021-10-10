@@ -1,10 +1,37 @@
-import ipfshttpclient
-import json
-import time
+import paramiko
+from ipfsapp import *
+import getpass
 
 # prerequisites: a running instance of an IPFS daemon (<= 0.8.0)
 
 if __name__ == '__main__': 
+	#client = IPFSManager()
+
+	""" HTTP Download Performance
+	---------------------------------------------------------
+	1st argument: path to file containing direct link URLs
+	2nd argument: path to download directory
+	"""
+	downloadTimes = DownloadManagerHTTP("config/sourceData.json", "data/source/").downloadFiles(runs=5)
+	print(downloadTimes)
+
+	"""
+	ip = "192.168.0.4"
+	port = 22
+	
+	ssh = paramiko.SSHClient()
+	ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+	ssh.connect(ip, port, getpass.getpass(prompt="User: "), getpass.getpass(), timeout=10)
+
+	stdin, stdout, stderr = ssh.exec_command("systemctl status ipfs.service")
+
+	result= stdout.read()
+	print(result)
+	ssh.close()
+	
+	"""
+
+	"""
 	
 	# connecting to the local IPFS node
 	client = ipfshttpclient.connect()
@@ -36,7 +63,7 @@ if __name__ == '__main__':
 
 
 
-
+	"""
 
 
 
