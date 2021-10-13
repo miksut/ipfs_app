@@ -124,4 +124,7 @@ dmypy.json
 .pyre/
 
 data/source/*
+data/serialized/*
 tmp/*
+config/ssh.json
+config/SourceDataV2.json
