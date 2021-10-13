@@ -125,6 +125,7 @@ dmypy.json
 
 data/source/*
 data/serialized/*
+data/download/*
 tmp/*
 config/ssh.json
 config/SourceDataV2.json

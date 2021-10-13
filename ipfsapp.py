@@ -77,14 +77,31 @@ class IPFSUpload(Action):
 		self.__ipfsClient = ipfsClient
 		self.__fileRemover = FileRemoverIPFS(self.__ipfsClient)
 
-	def upload(self, runs=1):
-		return super().execute(self.__fileRemover, runs) 
-
 	def logic(self, fileIDs, j, path):
 		result = self.__ipfsClient.add(path, wrap_with_directory=True)
 		directoryHash = result[1]['Hash']
 		fileName = result[0]['Name']
 		fileIDs[j] = [directoryHash, fileName]
+
+	def upload(self, runs=1):
+		return super().execute(self.__fileRemover, runs) 
+
+
+class IPFSDownload(Action):
+	def __init__(self, sourceCIDs, targetDirectory, ipfsClient):
+		super().__init__(sourceCIDs)
+		self.__storageDirectory = targetDirectory
+		self.__ipfsClient = ipfsClient
+		self.__fileRemoverIPFS = FileRemoverIPFS(self.__ipfsClient)
+		self.__fileRemoverOS = FileRemoverOS(self.__storageDirectory)
+
+	def logic(self, fileIDs, j, path):
+		self.__ipfsClient.get(path, self.__storageDirectory)
+		fileIDs[j] = self.__storageDirectory + path.split("/")[-1]
+
+	def download(self, runs=1):
+		self.__fileRemoverOS.execute()
+		return super().execute(self.__fileRemoverIPFS, runs)
 
 
 class IPFSClient:
