@@ -1,30 +1,72 @@
 from ipfsapp import *
-import getpass
 
 # prerequisites: a running instance of an IPFS daemon (<= 0.8.0)
 
 if __name__ == '__main__': 
-	client = IPFSClient().getClient()
 
-	downloadTimesHTTP, filePathsSource = HTTPDownload("config/sourceData.json", "data/source/").download(runs=1)
+	# Change for adjusting the number of runs (see task description)
+	runsLow = 5
+	runsHigh =5
+
+	downloadTimesHTTP, filePathsSource = HTTPDownload("config/sourceData.json", "data/source/").download(runs=runsLow)
+	print("HTTP Download:")
 	print(downloadTimesHTTP)
 	print(filePathsSource)
+	print()
 
-	serializationTimes, filePathsSerial = Serializer(filePathsSource, "data/serialized/").serialize(runs=1)
-	print(serializationTimes)
-	print(filePathsSerial)
+	serialTimesJSON, filePathsSerialJSON = Serializer(filePathsSource, "data/serialized/", ".json").serialize(runs=runsHigh)
+	print("Serialization to JSON:")
+	print(serialTimesJSON)
+	print(filePathsSerialJSON)
+	print()
 
-	uploadTimes, ipfsIDs = IPFSUpload(filePathsSerial, client).upload(runs=1)
-	print(uploadTimes)
-	print(ipfsIDs)
+	serialTimesPkl, filePathsSerialPkl = Serializer(filePathsSource, "data/serialized/", ".pkl").serialize(runs=runsHigh)
+	print("Serialization to Pickle:")
+	print(serialTimesPkl)
+	print(filePathsSerialPkl)
+	print()
 
-	# currently an undetected bug in the IPFSDistributor class, paths are hardcoded for the moment
-	#distributedIDs = IPFSDistributor("config/ssh.json", ipfsIDs).distribute()
-	
-	distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json"]
-	#distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json", "QmP8gDsjjwqZuVEYW4WRaTVzGMbjraRrdVHfhk2mqAAtg6/file2.json"]
+	uploadTimesJSON, ipfsIDsJSON = IPFSUpload(filePathsSerialJSON).upload(runs=runsHigh)
+	print("Uploading JSON files:")
+	print(uploadTimesJSON)
+	print(ipfsIDsJSON)
+	print()
 
-	downloadTimesIPFS, filePathsDownload = IPFSDownload(distributedIDs, "data/download/", client).download(runs=1)
-	print(downloadTimesIPFS)
-	print(filePathsDownload)
-	
+	uploadTimesPkl, ipfsIDsPkl = IPFSUpload(filePathsSerialPkl, removeFiles=False).upload(runs=runsHigh)
+	print("Uploading PICKLE files:")
+	print(uploadTimesPkl)
+	print(ipfsIDsPkl)
+	print()
+
+	downloadTimesIPFSLocalJSON, filePathsDownloadJSON = IPFSDownloadLocal(ipfsIDsJSON, "data/download/", ".json").download(runs=runsHigh)
+	print("Downloading JSON files from local IPFS node:")
+	print(downloadTimesIPFSLocalJSON)
+	print(filePathsDownloadJSON)
+	print()
+
+	downloadTimesIPFSLocalPkl, filePathsDownloadPkl = IPFSDownloadLocal(ipfsIDsPkl, "data/download/", ".pkl").download(runs=runsHigh)
+	print("Downloading PICKLE files from local IPFS node:")
+	print(downloadTimesIPFSLocalPkl)
+	print(filePathsDownloadPkl)
+	print()
+
+		# TODO: change first argument (-> donwload directory)
+	deserialTimesJSON, filePathsDeserialJSON = Deserializer(filePathsDownloadJSON, "data/deserialized/", ".json").deserialize(runs=runsHigh)
+	print("Deserialization from JSON:")
+	print(deserialTimesJSON)
+	print(filePathsDeserialJSON)
+	print()
+
+	# TODO: change first argument (-> donwload directory)
+	deserialTimesPkl, filePathsDeserialPkl = Deserializer(filePathsDownloadPkl, "data/deserialized/", ".pkl", removeFiles=False).deserialize(runs=runsHigh)
+	print("Deserialization from PICKLE:")
+	print(deserialTimesPkl)
+	print(filePathsDeserialPkl)
+	print()
+
+
+"""
+	#distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json"]
+	distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json", "QmP8gDsjjwqZuVEYW4WRaTVzGMbjraRrdVHfhk2mqAAtg6/file2.json"]
+
+"""

@@ -1,4 +1,6 @@
 import codecs
+import glob
+import pickle as pkl
 import ipfshttpclient
 import json
 import numpy as np
@@ -34,10 +36,10 @@ class Action:
 
 
 class HTTPDownload(Action):
-	def __init__(self, sourceDirectory, targetDirectory):
+	def __init__(self, sourceDirectory, targetDirectory, removeFiles=True):
 		super().__init__(self.__loadSourcePaths(sourceDirectory))
 		self.__downloadDirectory = targetDirectory
-		self.__fileRemover = FileRemoverOS(self.__downloadDirectory)
+		self.__fileRemover = FileRemoverOS(self.__downloadDirectory, ".txt", removeFiles)
 
 	def __loadSourcePaths(self, sourceDirectory):
 		with open(sourceDirectory, "r") as file_in:
@@ -56,42 +58,87 @@ class HTTPDownload(Action):
 
 
 class Serializer(Action):
-	def __init__(self, sourceDirectory, targetDirectory):
+	def __init__(self, sourceDirectory, targetDirectory, targetFormat, removeFiles=True):
 		super().__init__(sourceDirectory)
 		self.__storageDirectory = targetDirectory
-		self.__fileRemover = FileRemoverOS(self.__storageDirectory)
+		self.__targetFormat = targetFormat
+		self.__fileRemover = FileRemoverOS(self.__storageDirectory, self.__targetFormat, removeFiles)
 
-	def logic(self, fileIDs, j, path):
-		fileIDs[j] = self.__storageDirectory + "file" + str(j+1) +".json"
+	def __logicJSON(self, fileIDs, j, path):
+		fileIDs[j] = self.__storageDirectory + "file" + str(j+1) + self.__targetFormat
 		with open(path, "r", encoding="latin1") as file_in, open(fileIDs[j], "w") as file_out:
-			data = file_in.readlines()
+			data = file_in.read()
 			json.dump(data, file_out)
 
+	def __logicPICKLE(self, fileIDs, j, path):
+		fileIDs[j] = self.__storageDirectory + "file" + str(j+1) + self.__targetFormat
+		with open(path, "r", encoding="latin1") as file_in, open(fileIDs[j], "wb") as file_out:
+			data = file_in.read()
+			pkl.dump(data, file_out, protocol=pkl.HIGHEST_PROTOCOL)
+
+	def logic(self, fileIDs, j, path):
+		if (self.__targetFormat == ".json"):
+			self.__logicJSON(fileIDs, j, path)
+		elif (self.__targetFormat == ".pkl"):
+			self.__logicPICKLE(fileIDs, j, path)
+		else:
+			raise ValueError("Format not supported. Choose between .json and .pkl")
+		
 	def serialize(self, runs=1):
 		return super().execute(self.__fileRemover, runs)
 
 
-class IPFSUpload(Action):
-	def __init__(self, sourceDirectory, ipfsClient):
+class Deserializer(Action):
+	def __init__(self, sourceDirectory, targetDirectory, targetFormat, removeFiles=True):
 		super().__init__(sourceDirectory)
-		self.__ipfsClient = ipfsClient
-		self.__fileRemover = FileRemoverIPFS(self.__ipfsClient)
+		self.__storageDirectory = targetDirectory
+		self.__targetFormat = targetFormat
+		self.__fileRemover = FileRemoverOS(self.__storageDirectory, ".txt", removeFiles)
+
+	def __logicJSON(self, fileIDs, j, path):
+		fileIDs[j] = self.__storageDirectory + "file" + str(j+1) + "FromJSON" + ".txt"
+		with open(path, "r") as file_in, open(fileIDs[j], "wb") as file_out:
+			data = json.load(file_in)
+			file_out.write(data.encode("latin1"))
+
+	def __logicPICKLE(self, fileIDs, j, path):
+		fileIDs[j] = self.__storageDirectory + "file" + str(j+1) + "FromPICKLE" + ".txt"
+		with open(path, "rb") as file_in, open(fileIDs[j], "wb") as file_out:
+			data = pkl.load(file_in)
+			file_out.write(data.encode("latin1"))
 
 	def logic(self, fileIDs, j, path):
-		result = self.__ipfsClient.add(path, wrap_with_directory=True)
-		directoryHash = result[1]['Hash']
-		fileName = result[0]['Name']
-		fileIDs[j] = [directoryHash, fileName]
+		if (self.__targetFormat == ".json"):
+			self.__logicJSON(fileIDs, j, path)
+		elif (self.__targetFormat == ".pkl"):
+			self.__logicPICKLE(fileIDs, j, path)
+		else:
+			raise ValueError("Format not supported. Choose between .json and .pkl")	
+
+	def deserialize(self, runs=1):
+		return super().execute(self.__fileRemover, runs)
+
+
+class IPFSUpload(Action):
+	def __init__(self, sourceDirectory, removeFiles=True):
+		super().__init__(sourceDirectory)
+		self.__fileRemover = FileRemoverIPFS(removeFiles)
+
+	def logic(self, fileIDs, j, path):
+		with ipfshttpclient.connect() as client:
+			result = client.add(path, wrap_with_directory=True)
+			directoryHash = result[1]['Hash']
+			fileName = result[0]['Name']
+			fileIDs[j] = [directoryHash, fileName]
 
 	def upload(self, runs=1):
 		return super().execute(self.__fileRemover, runs) 
 
 
-class IPFSDownload(Action):
-	def __init__(self, sourceCIDs, targetDirectory, ipfsClient):
+class IPFSDownloadDist(Action):
+	def __init__(self, sourceCIDs, targetDirectory):
 		super().__init__(sourceCIDs)
 		self.__storageDirectory = targetDirectory
-		self.__ipfsClient = ipfsClient
 		self.__fileRemoverIPFS = FileRemoverIPFS(self.__ipfsClient)
 		self.__fileRemoverOS = FileRemoverOS(self.__storageDirectory)
 
@@ -100,18 +147,35 @@ class IPFSDownload(Action):
 		fileIDs[j] = self.__storageDirectory + path.split("/")[-1]
 
 	def download(self, runs=1):
-		self.__fileRemoverOS.execute()
-		return super().execute(self.__fileRemoverIPFS, runs)
+		#self.__fileRemoverOS.execute()
+		return super().execute(self.__fileRemoverOS, runs)
+
+
+class IPFSDownloadLocal(Action):
+	def __init__(self, sourceCIDs, targetDirectory, targetFormat, removeFiles=True):
+		super().__init__(sourceCIDs)
+		self.__storageDirectory = targetDirectory
+		self.__fileRemoverOS = FileRemoverOS(self.__storageDirectory, targetFormat, removeFiles)
+
+	def logic(self, fileIDs, j, path):
+		with ipfshttpclient.connect() as client:
+			client.get(path[0] + "/" + path[1], self.__storageDirectory)
+			fileIDs[j] = self.__storageDirectory + path[1]
+
+	def download(self, runs=1):
+		return super().execute(self.__fileRemoverOS, runs)
 
 
 class IPFSClient:
 	def __init__(self):
 		self.__client = ipfshttpclient.connect()
 		self.__confirmInstance()
+		self.__nodeIP = ""
 
 	def __confirmInstance(self):
 		print("\nIPFS daemon running on version: " + self.__client.version()["Version"])
-		print("Node IP: " + self.__client.id()["Addresses"][2])
+		self.__nodeIP = self.__client.id()["Addresses"][2]
+		print("Node IP: " + self.__nodeIP)
 
 	def getClient(self):
 		return self.__client
@@ -148,24 +212,33 @@ class IPFSDistributor:
 # Auxiliary classes
 # -----------------------------------------------------------
 class FileRemoverOS:
-	def __init__(self, targetDirectory):
+	def __init__(self, targetDirectory, targetFormat, removeFiles):
 		self.__targetDirectory = targetDirectory
+		self.__targetFormat = targetFormat
+		self.__removeFlag = removeFiles
 
 	def execute(self):
-		for file in os.scandir(self.__targetDirectory):
-				os.remove(file.path)
+		if (self.__removeFlag):
+			for file in glob.glob(self.__targetDirectory + "*" + self.__targetFormat):
+					os.remove(file)
+		else:
+			pass
 
 
 class FileRemoverIPFS:
-	def __init__(self, ipfsClient):
-		self.__ipfsClient = ipfsClient
+	def __init__(self, removeFiles):
+		self.__removeFlag = removeFiles
 
 	def execute(self):
-		pinnedContent = self.__ipfsClient.pin.ls(type='recursive')['Keys']
+		if (self.__removeFlag):	
+			with ipfshttpclient.connect() as client:
+				pinnedContent = client.pin.ls(type='recursive')['Keys']
+				for i in list(pinnedContent.keys()):
+					client.pin.rm(i)
+				client.repo.gc()
+		else:
+			pass
 
-		for i in list(pinnedContent.keys()):
-			self.__ipfsClient.pin.rm(i)
-		self.__ipfsClient.repo.gc()
 
 
 class Timer:

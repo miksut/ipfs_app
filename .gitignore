@@ -123,9 +123,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-data/source/*
-data/serialized/*
-data/download/*
-tmp/*
+data/source/*.txt
+data/serialized/*.json
+data/serialized/*.pkl
+data/download/*.json
+data/download/*.pkl
+data/deserialized/*.txt
 config/ssh.json
 config/SourceDataV2.json
+config/SourceData.json
