@@ -8,6 +8,7 @@
 - Sandro Padovan, 17-721-291
 - Cristian De Iaco, 13-943-915
 
+*Note: We completed the tasks for 1mb and 100mb files only. We did not do complete the tasks with the 1gb file, because we couldn't get it to work with that file, because it was too large and thus took too long to upload/retrieve through IPFS.*
 
 ## Discussion Points
 
