@@ -73,4 +73,4 @@ algorithms):
 > Time elapsed to serialize and store a picture or image (combined plot comparing
 two selected algorithms):
 
-![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/image_algorithm_comparison.pdf)
+![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/image_algorithm_comparison.png)
