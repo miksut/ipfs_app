@@ -136,19 +136,20 @@ class IPFSUpload(Action):
 
 
 class IPFSDownloadDist(Action):
-	def __init__(self, sourceCIDs, targetDirectory):
+	def __init__(self, sourceCIDs, targetDirectory, targetFormat, removeFiles=True):
 		super().__init__(sourceCIDs)
 		self.__storageDirectory = targetDirectory
-		self.__fileRemoverIPFS = FileRemoverIPFS(self.__ipfsClient)
-		self.__fileRemoverOS = FileRemoverOS(self.__storageDirectory)
+		self.__fileRemoverIPFS = FileRemoverIPFS(removeFiles)
+		self.__fileRemoverOS = FileRemoverOS(self.__storageDirectory, targetFormat, removeFiles)
 
 	def logic(self, fileIDs, j, path):
-		self.__ipfsClient.get(path, self.__storageDirectory)
-		fileIDs[j] = self.__storageDirectory + path.split("/")[-1]
+		with ipfshttpclient.connect() as client:
+			client.get(path[0] + "/" + path[1], self.__storageDirectory)
+			fileIDs[j] = self.__storageDirectory + path[1]
 
 	def download(self, runs=1):
-		#self.__fileRemoverOS.execute()
-		return super().execute(self.__fileRemoverOS, runs)
+		self.__fileRemoverOS.execute()
+		return super().execute(self.__fileRemoverIPFS, runs)
 
 
 class IPFSDownloadLocal(Action):
@@ -238,7 +239,6 @@ class FileRemoverIPFS:
 				client.repo.gc()
 		else:
 			pass
-
 
 
 class Timer:

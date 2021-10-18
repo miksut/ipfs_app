@@ -6,12 +6,12 @@ from image import *
 if __name__ == '__main__': 
 
 	# Change for adjusting the number of runs (see task description)
-	runsLow = 5
-	runsHigh =10
+	runsLow = 1
+	runsHigh =1
 
 	dataStore = DataStore("results/evaluation.json")
 
-	downloadTimesHTTP, filePathsSource = HTTPDownload("config/sourceDataV2.json", "data/source/").download(runs=runsLow)
+	downloadTimesHTTP, filePathsSource = HTTPDownload("config/sourceDataOriginal.json", "data/source/").download(runs=runsLow)
 	dataStore.store({"DownloadTimesHTTP" : downloadTimesHTTP.tolist()})
 	print("HTTP Download:")
 	print(downloadTimesHTTP)
@@ -60,6 +60,24 @@ if __name__ == '__main__':
 	print(filePathsDownloadPkl)
 	print()
 
+	# Note: the following code block only runs, if the distributed ipfs nodes of the group members are running. Uncomment only if satisfied
+	
+	"""
+	downloadTimesIPFSDistJSON, filePathDownloadDistJSON = IPFSDownloadDist(ipfsIDsJSON, "data/download/", ".json").download(runs=runsHigh)
+	dataStore.store({"DownloadTimesIPFSDistJSON" : downloadTimesIPFSDistJSON.tolist()})
+	print("Downloading JSON files from remote IPFS node:")
+	print(downloadTimesIPFSDistJSON)
+	print(filePathDownloadDistJSON)
+	print()
+
+	downloadTimesIPFSDistPkl, filePathDownloadDistPkl = IPFSDownloadDist(ipfsIDsPkl, "data/download/", ".pkl").download(runs=runsHigh)
+	dataStore.store({"DownloadTimesIPFSDistPkl" : downloadTimesIPFSDistPkl.tolist()})
+	print("Downloading PICKLE files from remote IPFS node:")
+	print(downloadTimesIPFSDistPkl)
+	print(filePathDownloadDistPkl)
+	print()
+	"""
+
 	deserialTimesJSON, filePathsDeserialJSON = Deserializer(filePathsDownloadJSON, "data/deserialized/", ".json").deserialize(runs=runsHigh)
 	dataStore.store({"DeserialTimesJSON" : deserialTimesJSON.tolist()})
 	print("Deserialization from JSON:")
@@ -74,14 +92,5 @@ if __name__ == '__main__':
 	print(filePathsDeserialPkl)
 	print()
 
-
 	# Image Serialization
 	imageHandler = Image(runsHigh=runsHigh).serialize()
-
-
-"""
-	#distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json"]
-	distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json", "QmP8gDsjjwqZuVEYW4WRaTVzGMbjraRrdVHfhk2mqAAtg6/file2.json"]
-
-"""
-
