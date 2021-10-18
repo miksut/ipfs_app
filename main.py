@@ -6,8 +6,8 @@ from image import *
 if __name__ == '__main__': 
 
 	# Change for adjusting the number of runs (see task description)
-	runsLow = 1
-	runsHigh =1
+	runsLow = 5
+	runsHigh =10
 
 	dataStore = DataStore("results/evaluation.json")
 
