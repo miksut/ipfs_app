@@ -132,3 +132,5 @@ data/deserialized/*.txt
 config/ssh.json
 config/SourceDataV2.json
 config/SourceData.json
+
+.idea

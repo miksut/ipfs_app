@@ -1,4 +1,5 @@
 from ipfsapp import *
+from image import *
 
 # prerequisites: a running instance of an IPFS daemon (<= 0.8.0)
 
@@ -6,7 +7,7 @@ if __name__ == '__main__':
 
 	# Change for adjusting the number of runs (see task description)
 	runsLow = 1
-	runsHigh =1
+	runsHigh = 5
 
 	downloadTimesHTTP, filePathsSource = HTTPDownload("config/sourceDataOriginal.json", "data/source/").download(runs=runsLow)
 	print("HTTP Download:")
@@ -63,6 +64,9 @@ if __name__ == '__main__':
 	print(deserialTimesPkl)
 	print(filePathsDeserialPkl)
 	print()
+
+	# Image Serialization
+	imageHandler = Image(runsHigh=runsHigh).serialize()
 
 
 """
