@@ -67,16 +67,16 @@ Scores:
 
 > Time elapsed to serialize and store (combined plot comparing two selected algorithms):
 
-![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/serialization1mb.jpg)
-![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/serialization100mb.jpg)
+![plot](./pictures/serialization1mb.jpg)
+![plot](./pictures/serialization100mb.jpg)
 
 > Time elapsed to retrieve and deserialize (combined plot comparing two selected
 algorithms):
 
-![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/deserialization1mb.jpg)
-![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/deserialization100mb.jpg)
+![plot](./pictures/deserialization1mb.jpg)
+![plot](./pictures/deserialization100mb.jpg)
 
 > Time elapsed to serialize and store a picture or image (combined plot comparing
 two selected algorithms):
 
-![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/image_algorithm_comparison.png)
+![plot](./pictures/image_algorithm_comparison.png)
