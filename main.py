@@ -5,12 +5,12 @@ from ipfsapp import *
 if __name__ == '__main__': 
 
 	# Change for adjusting the number of runs (see task description)
-	runsLow = 1
-	runsHigh =1
+	runsLow = 5
+	runsHigh =10
 
-	dataStore = DataStore("eval.json")
+	dataStore = DataStore("results/evaluation.json")
 
-	downloadTimesHTTP, filePathsSource = HTTPDownload("config/sourceData.json", "data/source/").download(runs=runsLow)
+	downloadTimesHTTP, filePathsSource = HTTPDownload("config/sourceDataV2.json", "data/source/").download(runs=runsLow)
 	dataStore.store({"DownloadTimesHTTP" : downloadTimesHTTP.tolist()})
 	print("HTTP Download:")
 	print(downloadTimesHTTP)
