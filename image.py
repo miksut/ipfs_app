@@ -43,6 +43,7 @@ class Image:
         fltJSON = np.around(fltJSON, decimals=3)
         fltPKL = np.around(fltPKL, decimals=3)
 
+        # plotting figure stuff
         xx = np.arange(self.__runsHigh)
         width = 0.4
         fig, ax = plt.subplots()
@@ -52,7 +53,6 @@ class Image:
 
         ax.bar_label(bar1)
         ax.bar_label(bar2)
-        # plt.bar(xx, fltJSON, label='JSON')
         plt.legend(loc='upper right')
         plt.suptitle('Algorithm Comparison for Image', fontweight='bold')
         plt.title('Serialization & Storing on IPFS node')
