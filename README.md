@@ -1,5 +1,13 @@
 # Fundamentals of Software Systems (HS21): Task 1
 
+## Group Members
+
+- Mike Suter, 13-110-671
+- Pascal Kiechl, 16-927-998
+- Fabian Kueffer, 15-931-421
+- Cristian De Iaco, 13-943-915
+
+
 ## Discussion Points
 
 > Which serialization algorithm performs better, and why? Algorithms may perform
