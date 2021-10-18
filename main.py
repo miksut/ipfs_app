@@ -1,4 +1,5 @@
 from ipfsapp import *
+from image import *
 
 # prerequisites: a running instance of an IPFS daemon (<= 0.8.0)
 
@@ -72,3 +73,15 @@ if __name__ == '__main__':
 	print(deserialTimesPkl)
 	print(filePathsDeserialPkl)
 	print()
+
+
+	# Image Serialization
+	imageHandler = Image(runsHigh=runsHigh).serialize()
+
+
+"""
+	#distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json"]
+	distributedIDs = ["QmQtUcq2ddiw4XmUs88WP5hUyA1DSh2GPQzsdDfyrdPx5G/file1.json", "QmP8gDsjjwqZuVEYW4WRaTVzGMbjraRrdVHfhk2mqAAtg6/file2.json"]
+
+"""
+
