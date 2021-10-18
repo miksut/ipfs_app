@@ -8,6 +8,9 @@
 - Sandro Padovan, 17-721-291
 - Cristian De Iaco, 13-943-915
 
+## Note
+
+*We completed the tasks for 1mb and 100mb files only. We did not complete the tasks for the 1gb file. We couldn't get it to work with that file, because it was too large and thus took too long to upload/retrieve through IPFS and we did not see any progress/feedback from IPFS daemon.*
 
 ## Discussion Points
 
@@ -28,8 +31,9 @@ particularly advantageous for relatively large files (e.g., 1 Gb)?
 The impact of file size is very different depending on the serialization algorithm. However, 
 for both algorithms there was a significant increase in the overall duration of the serialization 
 process for larger files. For JSON the file size had a larger impact compared to Pickle. This may be explained by the abovementionned performance optimizations.
+More specifically, JSON serialization increased the file size 4x. For example, the initial test file of 100mb was 400mb after JSON serialization. 
+On the other hand, Pickle serialization only resulted in a file size increase of 1.5x (e.g., from 100mb to 1500mb after serialization) and thus is more suited for larger files.
 
-*TODO: Add some numbers when we have our plots.*
 
 I wouldn't say that serialization is better for larger files, because its file size after serialization may explore (depending on the algorithm), the larger the initial file size. Therefore, serialization is better used for smaller payloads.
 
@@ -63,14 +67,16 @@ Scores:
 
 > Time elapsed to serialize and store (combined plot comparing two selected algorithms):
 
--->  insert plot
+![plot](./pictures/serialization1mb.jpg)
+![plot](./pictures/serialization100mb.jpg)
 
 > Time elapsed to retrieve and deserialize (combined plot comparing two selected
 algorithms):
 
---> insert plot
+![plot](./pictures/deserialization1mb.jpg)
+![plot](./pictures/deserialization100mb.jpg)
 
 > Time elapsed to serialize and store a picture or image (combined plot comparing
 two selected algorithms):
 
-![plot](https://github.com/miksut/ipfs_app/blob/main/pictures/image_algorithm_comparison.pdf)
+![plot](./pictures/image_algorithm_comparison.png)
