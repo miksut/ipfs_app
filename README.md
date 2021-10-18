@@ -41,7 +41,16 @@ download files in parallel compared to a centralized access, which improves the 
 experience using IPFS (1-10) considering aspects like available documentation
 and implementation experience?
 
-*TODO*
+In terms of documentation, there is plenty available. The [official docs](https://docs.ipfs.io/) provide a sufficiently in-depth guide for the available installation methods. Additionally, instructions on usage, important concepts as well as links to community sites and tutorials are present.
+
+The implementation experience is not as satisfactory when compared to the availability of information/documentation. This is mostly due to the fact that - at least in comparison to HTTP - a lot of additional steps are necessary to get set up. Plus, sometimes things were just not running smoothly, e.g., files would be inconsistent in terms of availability, sometimes not being available at all and other times having wildly varying  download speeds, which left us unclear on whether we messed up in our setup or if the technology simply has not quite matured yet.
+
+In our eyes, it is mostly the implementation experience that drags down the score, as the documentation side of things leaves very little to be desired.
+
+Scores:
+* Documentation: 9
+* Implementation Experience: 7
+* Overall: 8
 
 > Time elapsed to serialize and store (combined plot comparing two selected algorithms):
 
