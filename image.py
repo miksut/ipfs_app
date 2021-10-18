@@ -59,5 +59,5 @@ class Image:
         plt.xlabel('Runs')
         plt.ylabel('Combined Elapsed Time [s]')
         fig.tight_layout()
-        plt.show()
         plt.savefig('pictures/image_algorithm_comparison.pdf')
+        plt.show()
