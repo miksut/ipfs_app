@@ -28,7 +28,8 @@ particularly advantageous for relatively large files (e.g., 1 Gb)?
 The impact of file size is very different depending on the serialization algorithm. However, 
 for both algorithms there was a significant increase in the overall duration of the serialization 
 process for larger files. For JSON the file size had a larger impact compared to Pickle. This may be explained by the abovementionned performance optimizations.
-More specifically, JSON serialization increased the file size x4. For example, the initial test file of 100mb was 400mb after JSON serialization.
+More specifically, JSON serialization increased the file size x4. For example, the initial test file of 100mb was 400mb after JSON serialization. 
+On the other hand, Pickle serialization only resulted in a file size increase of 1.5x (e.g., from 100mb to 1500mb after serialization) and thus is more suited for larger files.
 
 
 I wouldn't say that serialization is better for larger files, because its file size after serialization may explore (depending on the algorithm), the larger the initial file size. Therefore, serialization is better used for smaller payloads.
