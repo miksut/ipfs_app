@@ -262,3 +262,20 @@ class Timer:
 
 class TimerError(Exception):
 	""" Custom exception used for Timer class """
+
+
+class DataStore:
+	def __init__(self, fileName):
+		self.__file = fileName
+		self.__initFile(fileName)
+
+	def __initFile(self, fileName):
+		with open(fileName, "w") as file:
+			json.dump({}, file)
+
+	def store(self, newData):
+		with open(self.__file, "r+") as file:
+			data = json.load(file)
+			data.update(newData)
+			file.seek(0)
+			json.dump(data, file)
