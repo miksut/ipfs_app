@@ -35,7 +35,7 @@ More specifically, JSON serialization increased the file size 4x. For example, t
 On the other hand, Pickle serialization only resulted in a file size increase of 1.5x (e.g., from 100mb to 1500mb after serialization) and thus is more suited for larger files.
 
 
-I wouldn't say that serialization is better for larger files, because its file size after serialization may explore (depending on the algorithm), the larger the initial file size. Therefore, serialization is better used for smaller payloads.
+I wouldn't say that serialization is better for larger files, because its file size after serialization may explode (depending on the algorithm), the larger the initial file size. Therefore, serialization is better used for smaller payloads.
 
 > At what point (if any) does the decentralized storage perform better than centralized?
 As previously mentioned (cf. Section 2), depending on factors such as
